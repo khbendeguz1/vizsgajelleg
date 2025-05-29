@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+
+namespace ConsoleApp2
+{
+    internal class Program
+    {
+        static string[,] palya = new string[3, 3];
+        static int lepesSzam = 0;
+
+        static void Main()
+        {
+            string fajlNev = "eredmenyek.txt";
+            while (true)
+            {
+                UjJatek();
+                string nyertes = null;
+
+                while (nyertes == null && lepesSzam < 9)
+                {
+                    Rajzol();
+                    string aktualisJel = lepesSzam % 2 == 0 ? "X" : "O";
+                    Console.WriteLine($"Következő játékos: {aktualisJel}");
+                    int x, y;
+                    while (true)
+                    {
+                        Console.Write("Add meg az X koordinátát (0-2): ");
+                        if (!int.TryParse(Console.ReadLine(), out x) || x < 0 || x > 2) continue;
+                        Console.Write("Add meg az Y koordinátát (0-2): ");
+                        if (!int.TryParse(Console.ReadLine(), out y) || y < 0 || y > 2) continue;
+                        if (palya[y, x] == " ") break;
+                        Console.WriteLine("Ez a mező már foglalt.");
+                    }
+
+                    palya[y, x] = aktualisJel;
+                    lepesSzam++;
+                    nyertes = Ellenorzes();
+                }
+
+                Rajzol();
+
+                if (nyertes != null)
+                {
+                    string uzenet = $"{nyertes} nyert {lepesSzam} lépésből.";
+                    File.AppendAllLines(fajlNev, new[] { uzenet });
+                    Console.WriteLine(uzenet);
+                    Console.WriteLine("Eddigi eredmények:");
+                    Console.WriteLine(File.ReadAllText(fajlNev));
+                }
+                else
+                {
+                    Console.WriteLine("Döntetlen.");
+                }
+
+                Console.WriteLine("Új játék? (i/n): ");
+                if (Console.ReadLine().ToLower() != "i") break;
+            }
+        }
+
+        static void UjJatek()
+        {
+            lepesSzam = 0;
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                    palya[i, j] = " ";
+        }
+
+        static void Rajzol()
+        {
+            Console.Clear();
+            for (int i = 0; i < 3; i++)
+            {
+                Console.WriteLine("|---|---|---|");
+                for (int j = 0; j < 3; j++)
+                {
+                    Console.Write($"| {palya[i, j]} ");
+                }
+                Console.WriteLine("|");
+            }
+            Console.WriteLine("|---|---|---|");
+        }
+
+        static string Ellenorzes()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (palya[i, 0] == palya[i, 1] && palya[i, 1] == palya[i, 2] && palya[i, 0] != " ") return palya[i, 0];
+                if (palya[0, i] == palya[1, i] && palya[1, i] == palya[2, i] && palya[0, i] != " ") return palya[0, i];
+            }
+
+            if (palya[0, 0] == palya[1, 1] && palya[1, 1] == palya[2, 2] && palya[0, 0] != " ") return palya[0, 0];
+            if (palya[0, 2] == palya[1, 1] && palya[1, 1] == palya[2, 0] && palya[0, 2] != " ") return palya[0, 2];
+
+            return null;
+        }
+    }
+}
