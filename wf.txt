@@ -1,0 +1,66 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        string[] tomb;
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (File.Exists("C:\\Users\\menes\\Desktop\\pelda.txt"));
+            {
+                tomb = File.ReadAllLines("C:\\Users\\menes\\Desktop\\pelda.txt");
+
+                foreach (string sor in tomb)
+                {
+                    string[] darabok = sor.Split(',');
+                    if (darabok.Length == 3)
+                    {
+                        nevek.AppendText(darabok[0] + Environment.NewLine);
+                    }
+                }
+            }
+
+            nevek.MouseClick += Nevek_MouseClick;
+        }
+
+        private void Nevek_MouseClick(object sender, MouseEventArgs e)
+        {
+            int index = nevek.GetCharIndexFromPosition(e.Location);
+            int sorSzam = nevek.GetLineFromCharIndex(index);
+
+            if (sorSzam >= 0 && sorSzam < tomb.Length)
+            {
+                string[] darabok = tomb[sorSzam].Split(',');
+                if (darabok.Length == 3)
+                {
+                    adatok.Text = $"Életkor: {darabok[1]}\r\nPontszám: {darabok[2]}";
+                }
+            }
+        }
+
+        private void nevek_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void adatok_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
